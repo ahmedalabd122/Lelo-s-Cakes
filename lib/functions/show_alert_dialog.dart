@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lelos_orders_app/providers/order_provider.dart';
 
 void displayAlertDialog(
   BuildContext context, {
@@ -8,7 +7,7 @@ void displayAlertDialog(
   required VoidCallback onYes,
 }) {
   showCupertinoDialog(
-    barrierDismissible: true,
+    barrierDismissible: false,
     context: context,
     builder: (context) {
       return AlertDialog(

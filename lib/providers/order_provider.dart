@@ -1,19 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
-import '../order_model.dart';
-
-const _uuid = Uuid();
+import 'package:lelos_orders_app/functions/copy_files_to_app_path.dart';
+import 'package:lelos_orders_app/providers/file_paths_provider.dart';
+import '../models/order_model.dart';
 
 final orderProvider = StateNotifierProvider<OrderNotifier, List<Order>>((ref) {
-  return OrderNotifier();
+  return OrderNotifier(ref);
 });
 
 class OrderNotifier extends StateNotifier<List<Order>> {
-  OrderNotifier() : super([]) {
+  OrderNotifier(this.ref) : super([]) {
     _loadOrders();
   }
-
+  StateNotifierProviderRef ref;
   Box<Order> get _orderBox => Hive.box<Order>('orders');
 
   void _loadOrders() async {
@@ -21,11 +20,12 @@ class OrderNotifier extends StateNotifier<List<Order>> {
     state = orders;
   }
 
-  void addOrder(
-    String order,
-    String description,
-    DateTime date,
-  ) async {
+  void addOrder({
+    required String order,
+    String? description,
+    required DateTime date,
+    List<String>? images,
+  }) async {
     final newDate = DateTime(
       date.year,
       date.month,
@@ -34,9 +34,10 @@ class OrderNotifier extends StateNotifier<List<Order>> {
 
     final newOrder = Order(
       order: order,
-      description: description,
+      description: description!,
       date: newDate,
       isCompleted: false,
+      images: images ?? [],
       uuid: state.isEmpty ? 1 : state.last.uuid + 1,
     );
 
@@ -46,6 +47,8 @@ class OrderNotifier extends StateNotifier<List<Order>> {
   }
 
   void removeOrder(key) async {
+    final Order order = _orderBox.get(key)!;
+    await deleteUnusedFiles([order]);
     await _orderBox.delete(key);
     _loadOrders();
   }
@@ -58,6 +61,8 @@ class OrderNotifier extends StateNotifier<List<Order>> {
   }
 
   void deleteAll() async {
+    final paths = ref.read(filePathsProvider);
+    await clearAppPath(paths);
     await _orderBox.clear();
     _loadOrders();
   }
@@ -95,6 +100,22 @@ class OrderNotifier extends StateNotifier<List<Order>> {
   void editOrder(Order order) async {
     await _orderBox.put(order.uuid, order);
     _loadOrders();
+  }
+
+  Order getOrderById(int id) {
+    final orders = _orderBox.values.toList();
+    for (Order order in orders) {
+      if (order.uuid == id) {
+        return order;
+      }
+    }
+    return Order(
+      order: 'There is no Order with this id',
+      description: '',
+      date: DateTime.now(),
+      isCompleted: false,
+      uuid: -1,
+    );
   }
 }
 

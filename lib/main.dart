@@ -1,17 +1,9 @@
-import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:lelos_orders_app/functions/show_add_dialog.dart';
-import 'package:lelos_orders_app/functions/show_alert_dialog.dart';
 import 'package:lelos_orders_app/pages/orders_page.dart';
-import 'package:lelos_orders_app/widgets/delete_button.dart';
-import 'package:lelos_orders_app/widgets/order_list_widget.dart';
-import 'package:lelos_orders_app/order_model.dart';
-import 'package:lelos_orders_app/providers/order_provider.dart';
+import 'package:lelos_orders_app/models/order_model.dart';
 
 void main() async {
   await Hive.initFlutter();

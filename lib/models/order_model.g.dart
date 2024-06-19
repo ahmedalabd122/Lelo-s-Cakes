@@ -22,7 +22,7 @@ class OrderAdapter extends TypeAdapter<Order> {
       date: fields[2] as DateTime,
       uuid: fields[3] == null ? -1 : fields[3] as int,
       description: fields[4] == null ? '' : fields[4] as String,
-      image: fields[5] == null ? '' : fields[5] as String,
+      images: fields[5] == null ? [] : (fields[5] as List).cast<String>(),
     );
   }
 
@@ -41,7 +41,7 @@ class OrderAdapter extends TypeAdapter<Order> {
       ..writeByte(4)
       ..write(obj.description)
       ..writeByte(5)
-      ..write(obj.image);
+      ..write(obj.images);
   }
 
   @override
