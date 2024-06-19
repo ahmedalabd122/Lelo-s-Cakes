@@ -6,7 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lelos_orders_app/functions/show_add_dialog.dart';
 import 'package:lelos_orders_app/functions/show_alert_dialog.dart';
 import 'package:lelos_orders_app/functions/show_edit_dialog.dart';
-import 'package:lelos_orders_app/order_model.dart';
+import 'package:lelos_orders_app/models/order_model.dart';
+import 'package:lelos_orders_app/pages/order_details_page.dart';
 import 'package:lelos_orders_app/providers/order_provider.dart';
 import 'package:lelos_orders_app/widgets/check_box.dart';
 import 'package:lelos_orders_app/widgets/delete_button.dart';
@@ -138,14 +139,23 @@ class _AnimatedListTileState extends State<AnimatedListTile> {
           border: Border.all()),
       width: MediaQuery.of(context).size.width,
       duration: Duration(
-        milliseconds: 300 + (widget.animationIndex * 100),
+        milliseconds: 300 + (widget.animationIndex * 30),
       ),
-      curve: Curves.easeInOut,
+      curve: Curves.fastEaseInToSlowEaseOut,
       transform: Matrix4.translationValues(
           startAnimate ? 0 : MediaQuery.of(context).size.width, 0, 0),
       child: Consumer(
         builder: (context, ref, child) => ListTile(
           onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => OrderDetailsPage(
+                  order: widget.order,
+                ),
+              ),
+            );
+          },
+          onLongPress: () {
             ref.read(dateProvider.notifier).state = widget.order.date;
             displayEditTodoDialog(context, widget.order);
           },
